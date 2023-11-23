@@ -6,31 +6,35 @@ CURRENT_DIR=$(
 )
 
 function log() {
-    message="[1Panel Log]: $1 "
+    message="[PanelX Log]: $1 "
     echo -e "${message}" 2>&1 | tee -a ${CURRENT_DIR}/install.log
 }
 
 echo
 cat << EOF
- ██╗    ██████╗  █████╗ ███╗   ██╗███████╗██╗     
-███║    ██╔══██╗██╔══██╗████╗  ██║██╔════╝██║     
-╚██║    ██████╔╝███████║██╔██╗ ██║█████╗  ██║     
- ██║    ██╔═══╝ ██╔══██║██║╚██╗██║██╔══╝  ██║     
- ██║    ██║     ██║  ██║██║ ╚████║███████╗███████╗
- ╚═╝    ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═══╝╚══════╝╚══════╝
+ _______                                 __  __    __ 
+/       \                               /  |/  |  /  |
+$$$$$$$  |  ______   _______    ______  $$ |$$ |  $$ |
+$$ |__$$ | /      \ /       \  /      \ $$ |$$  \/$$/ 
+$$    $$/  $$$$$$  |$$$$$$$  |/$$$$$$  |$$ | $$  $$<  
+$$$$$$$/   /    $$ |$$ |  $$ |$$    $$ |$$ |  $$$$  \ 
+$$ |      /$$$$$$$ |$$ |  $$ |$$$$$$$$/ $$ | $$ /$$  |
+$$ |      $$    $$ |$$ |  $$ |$$       |$$ |$$ |  $$ |
+$$/        $$$$$$$/ $$/   $$/  $$$$$$$/ $$/ $$/   $$/ 
+                                                                                                         
 EOF
 
 log "======================= 开始安装 ======================="
 
 function Prepare_System(){
-    if which 1panel >/dev/null 2>&1; then
-        log "1Panel Linux 服务器运维管理面板已安装，请勿重复安装"
+    if which panelx >/dev/null 2>&1; then
+        log "PanelX Linux 服务器运维管理面板已安装，请勿重复安装"
         exit 1
     fi
 }
 
 function Set_Dir(){
-    if read -t 120 -p "设置 1Panel 安装目录（默认为/opt）：" PANEL_BASE_DIR;then
+    if read -t 120 -p "设置 PanelX 安装目录（默认为/opt）：" PANEL_BASE_DIR;then
         if [[ "$PANEL_BASE_DIR" != "" ]];then
             if [[ "$PANEL_BASE_DIR" != /* ]];then
                 log "请输入目录的完整路径"
@@ -132,7 +136,7 @@ function Set_Port(){
     DEFAULT_PORT=`expr $RANDOM % 55535 + 10000`
 
     while true; do
-        read -p "设置 1Panel 端口（默认为$DEFAULT_PORT）：" PANEL_PORT
+        read -p "设置 PanelX 端口（默认为$DEFAULT_PORT）：" PANEL_PORT
 
         if [[ "$PANEL_PORT" == "" ]];then
             PANEL_PORT=$DEFAULT_PORT
@@ -174,7 +178,7 @@ function Set_Username(){
     DEFAULT_USERNAME=`cat /dev/urandom | head -n 16 | md5sum | head -c 10`
 
     while true; do
-        read -p "设置 1Panel 用户名称（默认为$DEFAULT_USERNAME）：" PANEL_USERNAME
+        read -p "设置 PanelX 用户名称（默认为$DEFAULT_USERNAME）：" PANEL_USERNAME
 
         if [[ "$PANEL_USERNAME" == "" ]];then
             PANEL_USERNAME=$DEFAULT_USERNAME
@@ -194,7 +198,7 @@ function Set_Password(){
     DEFAULT_PASSWORD=`cat /dev/urandom | head -n 16 | md5sum | head -c 10`
 
     while true; do
-        echo "设置 1Panel 用户密码（默认为$DEFAULT_PASSWORD）："
+        echo "设置 PanelX 用户密码（默认为$DEFAULT_PASSWORD）："
         read -s PANEL_PASSWORD
 
         if [[ "$PANEL_PASSWORD" == "" ]];then
@@ -211,47 +215,47 @@ function Set_Password(){
 }
 
 function Init_Panel(){
-    log "配置 1Panel Service"
+    log "配置 PanelX Service"
 
-    RUN_BASE_DIR=$PANEL_BASE_DIR/1panel
+    RUN_BASE_DIR=$PANEL_BASE_DIR/panelx
     mkdir -p $RUN_BASE_DIR
     rm -rf $RUN_BASE_DIR/*
 
     cd ${CURRENT_DIR}
 
-    cp ./1panel /usr/local/bin && chmod +x /usr/local/bin/1panel
-    if [[ ! -f /usr/bin/1panel ]]; then
-        ln -s /usr/local/bin/1panel /usr/bin/1panel >/dev/null 2>&1
+    cp ./panelx /usr/local/bin && chmod +x /usr/local/bin/panelx
+    if [[ ! -f /usr/bin/panelx ]]; then
+        ln -s /usr/local/bin/panelx /usr/bin/panelx >/dev/null 2>&1
     fi
 
-    cp ./1pctl /usr/local/bin && chmod +x /usr/local/bin/1pctl
-    sed -i -e "s#BASE_DIR=.*#BASE_DIR=${PANEL_BASE_DIR}#g" /usr/local/bin/1pctl
-    sed -i -e "s#ORIGINAL_PORT=.*#ORIGINAL_PORT=${PANEL_PORT}#g" /usr/local/bin/1pctl
-    sed -i -e "s#ORIGINAL_USERNAME=.*#ORIGINAL_USERNAME=${PANEL_USERNAME}#g" /usr/local/bin/1pctl
+    cp ./pxctl /usr/local/bin && chmod +x /usr/local/bin/pxctl
+    sed -i -e "s#BASE_DIR=.*#BASE_DIR=${PANEL_BASE_DIR}#g" /usr/local/bin/pxctl
+    sed -i -e "s#ORIGINAL_PORT=.*#ORIGINAL_PORT=${PANEL_PORT}#g" /usr/local/bin/pxctl
+    sed -i -e "s#ORIGINAL_USERNAME=.*#ORIGINAL_USERNAME=${PANEL_USERNAME}#g" /usr/local/bin/pxctl
     ESCAPED_PANEL_PASSWORD=$(echo "$PANEL_PASSWORD" | sed 's/[!@#$%*_,.?]/\\&/g')
-    sed -i -e "s#ORIGINAL_PASSWORD=.*#ORIGINAL_PASSWORD=${ESCAPED_PANEL_PASSWORD}#g" /usr/local/bin/1pctl
+    sed -i -e "s#ORIGINAL_PASSWORD=.*#ORIGINAL_PASSWORD=${ESCAPED_PANEL_PASSWORD}#g" /usr/local/bin/pxctl
     PANEL_ENTRANCE=`cat /dev/urandom | head -n 16 | md5sum | head -c 10`
-    sed -i -e "s#ORIGINAL_ENTRANCE=.*#ORIGINAL_ENTRANCE=${PANEL_ENTRANCE}#g" /usr/local/bin/1pctl
-    if [[ ! -f /usr/bin/1pctl ]]; then
-        ln -s /usr/local/bin/1pctl /usr/bin/1pctl >/dev/null 2>&1
+    sed -i -e "s#ORIGINAL_ENTRANCE=.*#ORIGINAL_ENTRANCE=${PANEL_ENTRANCE}#g" /usr/local/bin/pxctl
+    if [[ ! -f /usr/bin/px ]]; then
+        ln -s /usr/local/bin/pxctl /usr/bin/pxctl >/dev/null 2>&1
     fi
 
-    cp ./1panel.service /etc/systemd/system
+    cp ./panelx.service /etc/systemd/system
 
-    systemctl enable 1panel; systemctl daemon-reload 2>&1 | tee -a ${CURRENT_DIR}/install.log
+    systemctl enable panelx; systemctl daemon-reload 2>&1 | tee -a ${CURRENT_DIR}/install.log
 
-    log "启动 1Panel 服务"
-    systemctl start 1panel | tee -a ${CURRENT_DIR}/install.log
+    log "启动 PanelX 服务"
+    systemctl start panelx | tee -a ${CURRENT_DIR}/install.log
 
     for b in {1..30}
     do
         sleep 3
-        service_status=`systemctl status 1panel 2>&1 | grep Active`
+        service_status=`systemctl status panelx 2>&1 | grep Active`
         if [[ $service_status == *running* ]];then
-            log "1Panel 服务启动成功!"
+            log "PanelX 服务启动成功!"
             break;
         else
-            log "1Panel 服务启动出错!"
+            log "PanelX 服务启动出错!"
             exit 1
         fi
     done
@@ -271,7 +275,7 @@ function Get_Ip(){
     fi
     if echo "$PUBLIC_IP" | grep -q ":"; then
         PUBLIC_IP=[${PUBLIC_IP}]
-        1pctl listen-ip ipv6
+        pxctl listen-ip ipv6
     fi
 }
 
@@ -285,9 +289,9 @@ function Show_Result(){
     log "用户名称: $PANEL_USERNAME"
     log "用户密码: $PANEL_PASSWORD"
     log ""
-    log "项目官网: https://1panel.cn"
-    log "项目文档: https://1panel.cn/docs"
-    log "代码仓库: https://github.com/1Panel-dev/1Panel"
+    log "项目官网: https://www.panelx.cn"
+    log "项目文档: https://www.panelx.cn/docs"
+    log "代码仓库: https://github.com/icoller/panelx"
     log ""
     log "如果使用的是云服务器，请至安全组开放 $PANEL_PORT 端口"
     log ""

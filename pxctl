@@ -11,52 +11,52 @@ ORIGINAL_USERNAME=username
 ORIGINAL_PASSWORD=password
 
 function usage() {
-    echo "1Panel 控制脚本"
+    echo "PanelX 控制脚本"
     echo
     echo "Usage: "
-    echo "  ./1pctl [COMMAND] [ARGS...]"
-    echo "  ./1pctl --help"
+    echo "  ./pxctl [COMMAND] [ARGS...]"
+    echo "  ./pxctl --help"
     echo
     echo "Commands: "
-    echo "  status              查看 1Panel 服务运行状态"
-    echo "  start               启动 1Panel 服务"
-    echo "  stop                停止 1Panel 服务"
-    echo "  restart             重启 1Panel 服务"
-    echo "  uninstall           卸载 1Panel 服务"
-    echo "  user-info           获取 1Panel 用户信息"
-    echo "  listen-ip           切换 1Panel 监听 IP"
-    echo "  version             查看 1Panel 版本信息"
-    echo "  reset               重置 1Panel 系统信息"
-    echo "  restore             恢复 1Panel 服务及数据"
+    echo "  status              查看 PanelX 服务运行状态"
+    echo "  start               启动 PanelX 服务"
+    echo "  stop                停止 PanelX 服务"
+    echo "  restart             重启 PanelX 服务"
+    echo "  uninstall           卸载 PanelX 服务"
+    echo "  user-info           获取 PanelX 用户信息"
+    echo "  listen-ip           切换 PanelX 监听 IP"
+    echo "  version             查看 PanelX 版本信息"
+    echo "  reset               重置 PanelX 系统信息"
+    echo "  restore             恢复 PanelX 服务及数据"
 }
 function status() {
-    systemctl status 1panel.service
+    systemctl status panelx.service
 }
 function start() {
-    systemctl start 1panel.service
+    systemctl start panelx.service
     status
 }
 function stop() {
-    systemctl stop 1panel.service
+    systemctl stop panelx.service
     status
 }
 function restart() {
-    systemctl restart 1panel.service
+    systemctl restart panelx.service
     status
 }
 function uninstall() {
-    read -p "卸载将会完全清除 1Panel 服务和数据目录，是否继续 [y/n] : " yn
+    read -p "卸载将会完全清除 PanelX 服务和数据目录，是否继续 [y/n] : " yn
     if [ "$yn" == "Y" ] || [ "$yn" == "y" ]; then
-        echo -e "================== 开始卸载 1Panel Linux 服务器运维管理面板 =================="
+        echo -e "================== 开始卸载 PanelX Linux 服务器运维管理面板 =================="
         echo -e ""
-        echo -e "1) 停止 1Panel 服务进程..."
-        systemctl stop 1panel.service
+        echo -e "1) 停止 PanelX 服务进程..."
+        systemctl stop panelx.service
     else
         exit 0
     fi
 
-    echo -e "2) 删除 1Panel 服务和数据目录..."
-    rm -rf $BASE_DIR/1panel /usr/local/bin/{1pctl,1panel} /etc/systemd/system/1panel.service
+    echo -e "2) 删除 PanelX 服务和数据目录..."
+    rm -rf $BASE_DIR/panelx /usr/local/bin/{pxctl,panelx} /etc/systemd/system/panelx.service
 
     echo -e "3) 重新加载服务配置文件..."
     systemctl daemon-reload
@@ -66,53 +66,53 @@ function uninstall() {
     echo -e "================================== 卸载完成 =================================="
 }
 function user-info() {
-    1panel user-info
+    panelx user-info
 }
 function listen-ip() {
-    1panel listen-ip
+    panelx listen-ip
 }
 function listen_ipv4() {
-    1panel listen-ip ipv4
+    panelx listen-ip ipv4
     restart
 }
 function listen_ipv6() {
-    1panel listen-ip ipv6
+    panelx listen-ip ipv6
     restart
 }
 function restore() {
-    read -p "1Panel 将会恢复至上一个稳定版本，是否继续 [y/n] : " yn
+    read -p "PanelX 将会恢复至上一个稳定版本，是否继续 [y/n] : " yn
     if [ "$yn" == "Y" ] || [ "$yn" == "y" ]; then
         echo -e ""
-        1panel restore
+        panelx restore
         systemctl daemon-reload
         restart
         echo -e ""
-        1panel version
+        panelx version
     else
         exit 0
     fi
 }
 function version() {
-    1panel version
+    panelx version
 }
 function reset() {
-    1panel reset
+    panelx reset
 }
 function reset_domain() {
-    1panel reset domain
+    panelx reset domain
 }
 function reset_entrance() {
-    1panel reset entrance
+    panelx reset entrance
 }
 function reset_https() {
-    1panel reset https
+    panelx reset https
     restart
 }
 function reset_ips() {
-    1panel reset ips
+    panelx reset ips
 }
 function reset_mfa() {
-    1panel reset mfa
+    panelx reset mfa
 }
 
 function main() {

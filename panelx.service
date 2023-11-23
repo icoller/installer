@@ -1,9 +1,9 @@
 [Unit]
-Description=1Panel, a modern open source linux panel
+Description=PanelX, a modern open source linux panel
 After=syslog.target network.target
 
 [Service]
-ExecStart=/usr/bin/1panel
+ExecStart=/usr/bin/panelx
 ExecReload=/bin/kill -s HUP $MAINPID
 Restart=always
 RestartSec=5
